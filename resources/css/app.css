@@ -1,0 +1,62 @@
+@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@theme {
+    --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    /* Blue Primary Colors */
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+    --color-primary-950: #172554;
+}
+
+/* Custom component styles */
+@layer components {
+    .btn-primary {
+        @apply inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 ease-in-out;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 ease-in-out;
+    }
+
+    .btn-outline {
+        @apply inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-primary-600 bg-transparent border border-primary-300 rounded-lg hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 ease-in-out;
+    }
+
+    .input-field {
+        @apply block w-full px-3 py-2.5 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 ease-in-out;
+    }
+
+    .card {
+        @apply bg-white border border-gray-200 rounded-xl shadow-sm;
+    }
+
+    .table-modern {
+        @apply w-full text-sm text-left text-gray-500;
+    }
+
+    .table-modern thead {
+        @apply text-xs text-gray-700 uppercase bg-gray-50;
+    }
+
+    .table-modern th {
+        @apply px-6 py-3 font-medium;
+    }
+
+    .table-modern td {
+        @apply px-6 py-4 whitespace-nowrap;
+    }
+
+    .table-modern tbody tr {
+        @apply bg-white border-b hover:bg-gray-50 transition-colors duration-150;
+    }
+}
