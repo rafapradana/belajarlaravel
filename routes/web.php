@@ -3,8 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\adminController;
 use App\Http\Controllers\siswaController;
+use App\Http\Controllers\kontenController;
 
-Route::get('/', [adminController::class, 'landing'])->name('landing');
+Route::get('/', [kontenController::class, 'landing'])->name('landing');
+Route::get('/detil/{id}', [kontenController::class, 'detil'])->name('detil');
 Route::get('/login', [adminController::class, 'formLogin'])->name('login');
 Route::post('/login', [adminController::class, 'prosesLogin'])->name('login.post');
 Route::get('/register', [adminController::class, 'formRegister'])->name('register');
