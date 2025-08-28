@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\siswa;
 use App\Models\admin;
 use App\Models\guru;
+use App\Models\Konten;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,19 +17,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         
-        $admin1 = admin::factory()->dataadmin1()->create();
-        $admin2 = admin::factory()->dataadmin2()->create();
+        admin::factory()->dataadmin1()->create();
+        admin::factory()->dataadmin2()->create();
         
-        // Create siswa records with valid admin IDs
-        siswa::factory()->count(5)->create(['id' => $admin1->id]);
-        siswa::factory()->count(15)->create(['id' => $admin2->id]);
-        
-        // Create guru records with valid admin IDs
-        guru::factory()->count(5)->create(['id' => $admin2->id]);  
+        siswa::factory()->count(15)->create();
+        guru::factory()->count(5)->create();  
 
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        Konten::factory()->count(10)->create();
     }
 }
