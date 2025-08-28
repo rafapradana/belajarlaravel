@@ -13,8 +13,9 @@ class AdminFactory extends Factory
     public function definition(): array
     {
         return [
-            'username' => 'admin',
-            'password' => Hash::make('admin'),
+            'username' => $this->faker->unique()->userName,
+            'password' => Hash::make('123'),
+            'role' => 'siswa'
         ];
     }
 

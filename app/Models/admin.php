@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Admin extends Model
 {
     //
-
+    protected $primaryKey = 'id';
     protected $table = 'dataadmin'; 
     protected $fillable = [
         'username',
@@ -17,5 +17,11 @@ class Admin extends Model
     ];
     use HasFactory;
 
-    
+    public function siswa() {
+    return $this->hasOne(siswa::class, 'id');
+    }
+
+    public function guru() {
+    return $this->hasOne(guru::class, 'id');
+    }
 }
