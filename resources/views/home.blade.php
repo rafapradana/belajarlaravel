@@ -423,7 +423,9 @@
                         </svg>
                         <h3 class="mt-4 text-lg font-medium text-gray-900">Guru Mata Pelajaran</h3>
                         <p class="mt-2 text-sm text-gray-500">
-                            Anda adalah guru mata pelajaran <strong>{{ $userInfo->mapel }}</strong>.<br>
+                            @if($userInfo && $userInfo->mapel)
+                                Anda adalah guru mata pelajaran <strong>{{ $userInfo->mapel }}</strong>.<br>
+                            @endif
                             Anda tidak memiliki akses untuk melihat data siswa karena tidak ditugaskan sebagai wali kelas.
                         </p>
                     </div>

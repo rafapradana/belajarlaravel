@@ -30,31 +30,25 @@ class siswaController extends Controller
 
     if ($adminRole === 'siswa') {
         // Cari data siswa berdasarkan admin_id yang sesuai dengan foreign key di tabel siswa
-        $adminData = admin::find($adminId);
-        if ($adminData) {
-            $userInfo = siswa::where('id', $adminData->id)->first();
-            if ($userInfo) {
-                // Cari kelas siswa dan info walas
-                $kelasInfo = kelas::where('idsiswa', $userInfo->idsiswa)
-                                 ->with(['walas.guru'])
-                                 ->first();
-            }
+        $userInfo = siswa::where('id', $adminId)->first();
+        if ($userInfo) {
+            // Cari kelas siswa dan info walas
+            $kelasInfo = kelas::where('idsiswa', $userInfo->idsiswa)
+                             ->with(['walas.guru'])
+                             ->first();
         }
     } elseif ($adminRole === 'guru') {
         // Cari data guru berdasarkan admin_id yang sesuai dengan foreign key di tabel guru
-        $adminData = admin::find($adminId);
-        if ($adminData) {
-            $userInfo = guru::where('id', $adminData->id)->first();
-            if ($userInfo) {
-                // Cek apakah guru ini adalah walas
-                $walasInfo = walas::where('idguru', $userInfo->idguru)->first();
-                if ($walasInfo) {
-                    // Jika walas, ambil semua siswa di kelasnya
-                    $siswaWalas = kelas::where('idwalas', $walasInfo->idwalas)
-                                      ->with('siswa')
-                                      ->get()
-                                      ->pluck('siswa');
-                }
+        $userInfo = guru::where('id', $adminId)->first();
+        if ($userInfo) {
+            // Cek apakah guru ini adalah walas
+            $walasInfo = walas::where('idguru', $userInfo->idguru)->first();
+            if ($walasInfo) {
+                // Jika walas, ambil semua siswa di kelasnya
+                $siswaWalas = kelas::where('idwalas', $walasInfo->idwalas)
+                                  ->with('siswa')
+                                  ->get()
+                                  ->pluck('siswa');
             }
         }
     }

@@ -22,20 +22,26 @@ class DatabaseSeeder extends Seeder
         admin::factory()->dataadmin1()->create();
 
         //username dan password guru, guru
-        admin::factory()->dataadmin2()->create();
+        $adminGuru = admin::factory()->dataadmin2()->create();
 
         //membuat 5 data untuk tabel konten
         konten::factory()->count(5)->create();
 
         //Penambahan dari scenario kali ini mulai dari baris ini
-        //membuat 5 data untuk tabel guru, dan disimpan di variabel objek gurus
-        $gurus = guru::factory(5)->create();
+        //membuat data guru untuk admin guru
+        guru::factory()->create(['id' => $adminGuru->id]);
+
+        //membuat 4 data tambahan untuk tabel guru, dan disimpan di variabel objek gurus
+        $gurus = guru::factory(4)->create();
+
+        //gabungkan semua guru (termasuk admin guru)
+        $allGurus = guru::all();
 
         //membuat 25 data untuk tabel siswa, dan disimpan di variabel objek siswas
         $siswas = siswa::factory(25)->create();
 
-        //mengambil 3 data secara random dari variabel objek gurus
-        $guruRandom = $gurus->random(3);
+        //mengambil 3 data secara random dari semua guru
+        $guruRandom = $allGurus->random(3);
 
         //3 guru random dijadikan walas
         foreach ($guruRandom as $guru) {
