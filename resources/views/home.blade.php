@@ -68,7 +68,7 @@
                             
                             <!-- Role-specific Information -->
                             @if($adminRole === 'siswa' && $userInfo)
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                                     <div class="bg-gray-50 rounded-lg p-4">
                                         <p class="text-sm font-medium text-gray-600">Full Name</p>
                                         <p class="text-lg font-semibold text-gray-900">{{ $userInfo->nama }}</p>
@@ -82,8 +82,25 @@
                                         <p class="text-lg font-semibold text-gray-900">{{ $userInfo->bb }} kg</p>
                                     </div>
                                 </div>
+
+                                @if($kelasInfo && $kelasInfo->walas && $kelasInfo->walas->guru)
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                        <h3 class="text-lg font-semibold text-blue-900 mb-2">Informasi Kelas</h3>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <p class="text-sm font-medium text-blue-600">Wali Kelas</p>
+                                                <p class="text-lg font-semibold text-blue-900">{{ $kelasInfo->walas->guru->nama }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-blue-600">Kelas</p>
+                                                <p class="text-lg font-semibold text-blue-900">{{ $kelasInfo->walas->jenjang }} {{ $kelasInfo->walas->namakelas }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
                             @elseif($adminRole === 'guru' && $userInfo)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                     <div class="bg-gray-50 rounded-lg p-4">
                                         <p class="text-sm font-medium text-gray-600">Teacher Name</p>
                                         <p class="text-lg font-semibold text-gray-900">{{ $userInfo->nama }}</p>
@@ -93,6 +110,33 @@
                                         <p class="text-lg font-semibold text-gray-900">{{ $userInfo->mapel }}</p>
                                     </div>
                                 </div>
+
+                                @if($walasInfo)
+                                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                        <h3 class="text-lg font-semibold text-green-900 mb-2">Wali Kelas</h3>
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                            <div>
+                                                <p class="text-sm font-medium text-green-600">Kelas</p>
+                                                <p class="text-lg font-semibold text-green-900">{{ $walasInfo->jenjang }} {{ $walasInfo->namakelas }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-green-600">Tahun Ajaran</p>
+                                                <p class="text-lg font-semibold text-green-900">{{ $walasInfo->tahunajaran }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-green-600">Jumlah Siswa</p>
+                                                <p class="text-lg font-semibold text-green-900">{{ $siswaWalas->count() }} siswa</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                        <p class="text-sm font-medium text-yellow-600">Status</p>
+                                        <p class="text-lg font-semibold text-yellow-900">Guru Mata Pelajaran</p>
+                                        <p class="text-sm text-yellow-700 mt-1">Anda tidak ditugaskan sebagai wali kelas.</p>
+                                    </div>
+                                @endif
+
                             @elseif($adminRole === 'admin')
                                 <div class="bg-gray-50 rounded-lg p-4">
                                     <p class="text-sm font-medium text-gray-600">Access Level</p>
@@ -140,6 +184,7 @@
             </div>
 
             <!-- Stats Cards -->
+            @if($adminRole === 'admin' || ($adminRole === 'guru' && $walasInfo))
             <div class="px-4 sm:px-0 mb-8">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
@@ -153,8 +198,20 @@
                                     </div>
                                 </div>
                                 <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Total Students</p>
-                                    <p class="text-2xl font-semibold text-gray-900">{{ $siswa->count() }}</p>
+                                    <p class="text-sm font-medium text-gray-600">
+                                        @if($adminRole === 'admin')
+                                            Total Students
+                                        @else
+                                            Students in Class
+                                        @endif
+                                    </p>
+                                    <p class="text-2xl font-semibold text-gray-900">
+                                        @if($adminRole === 'admin')
+                                            {{ $siswa->count() }}
+                                        @else
+                                            {{ $siswaWalas->count() }}
+                                        @endif
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -173,7 +230,11 @@
                                 <div class="ml-4">
                                     <p class="text-sm font-medium text-gray-600">Avg Height</p>
                                     <p class="text-2xl font-semibold text-gray-900">
-                                        {{ $siswa->count() > 0 ? number_format($siswa->avg('tb'), 1) : '0' }} cm
+                                        @if($adminRole === 'admin')
+                                            {{ $siswa->count() > 0 ? number_format($siswa->avg('tb'), 1) : '0' }} cm
+                                        @else
+                                            {{ $siswaWalas->count() > 0 ? number_format($siswaWalas->avg('tb'), 1) : '0' }} cm
+                                        @endif
                                     </p>
                                 </div>
                             </div>
@@ -193,7 +254,11 @@
                                 <div class="ml-4">
                                     <p class="text-sm font-medium text-gray-600">Avg Weight</p>
                                     <p class="text-2xl font-semibold text-gray-900">
-                                        {{ $siswa->count() > 0 ? number_format($siswa->avg('bb'), 1) : '0' }} kg
+                                        @if($adminRole === 'admin')
+                                            {{ $siswa->count() > 0 ? number_format($siswa->avg('bb'), 1) : '0' }} kg
+                                        @else
+                                            {{ $siswaWalas->count() > 0 ? number_format($siswaWalas->avg('bb'), 1) : '0' }} kg
+                                        @endif
                                     </p>
                                 </div>
                             </div>
@@ -201,18 +266,34 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             <!-- Students Table -->
+            @if($adminRole === 'admin' || ($adminRole === 'guru' && $walasInfo))
             <div class="px-4 sm:px-0">
                 <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-900">Students List</h3>
+                        <h3 class="text-lg font-medium text-gray-900">
+                            @if($adminRole === 'admin')
+                                Students List
+                            @else
+                                My Class Students
+                            @endif
+                        </h3>
                         <p class="mt-1 text-sm text-gray-600">
-                            A list of all students with their information
+                            @if($adminRole === 'admin')
+                                A list of all students with their information
+                            @else
+                                Students in {{ $walasInfo->jenjang }} {{ $walasInfo->namakelas }}
+                            @endif
                         </p>
                     </div>
 
-                    @if($siswa->count() > 0)
+                    @php
+                        $displayStudents = $adminRole === 'admin' ? $siswa : $siswaWalas;
+                    @endphp
+
+                    @if($displayStudents->count() > 0)
                     <div class="overflow-x-auto">
                         <table class="table-modern">
                             <thead>
@@ -240,7 +321,7 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($siswa as $i => $s)
+                                @foreach($displayStudents as $i => $s)
                                 <tr class="hover:bg-gray-50 transition-colors duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {{ $i + 1 }}
@@ -293,12 +374,12 @@
                                     @if (session('admin_role') === 'admin')
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex items-center justify-end space-x-2">
-                                            <a href="{{ route('siswa.edit', $s->id) }}" class="text-primary-600 hover:text-primary-900 transition-colors duration-150">
+                                            <a href="{{ route('siswa.edit', $s->idsiswa) }}" class="text-primary-600 hover:text-primary-900 transition-colors duration-150">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                 </svg>
                                             </a>
-                                            <button onclick="confirmDelete('{{ $s->id }}', '{{ $s->nama }}')" class="text-red-600 hover:text-red-900 transition-colors duration-150">
+                                            <button onclick="confirmDelete('{{ $s->idsiswa }}', '{{ $s->nama }}')" class="text-red-600 hover:text-red-900 transition-colors duration-150">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                 </svg>
@@ -332,6 +413,39 @@
                     @endif
                 </div>
             </div>
+            @elseif($adminRole === 'guru' && !$walasInfo)
+            <!-- Guru yang bukan walas -->
+            <div class="px-4 sm:px-0">
+                <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-8 text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                        <h3 class="mt-4 text-lg font-medium text-gray-900">Guru Mata Pelajaran</h3>
+                        <p class="mt-2 text-sm text-gray-500">
+                            Anda adalah guru mata pelajaran <strong>{{ $userInfo->mapel }}</strong>.<br>
+                            Anda tidak memiliki akses untuk melihat data siswa karena tidak ditugaskan sebagai wali kelas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            @elseif($adminRole === 'siswa')
+            <!-- Siswa -->
+            <div class="px-4 sm:px-0">
+                <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-8 text-center">
+                        <svg class="mx-auto h-12 w-12 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <h3 class="mt-4 text-lg font-medium text-gray-900">Selamat Datang, {{ $userInfo->nama }}!</h3>
+                        <p class="mt-2 text-sm text-gray-500">
+                            Informasi lengkap Anda telah ditampilkan di atas.<br>
+                            Untuk informasi lebih lanjut, silakan hubungi wali kelas atau administrator.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            @endif
         </main>
     </div>
 
