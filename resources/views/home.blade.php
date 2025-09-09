@@ -44,14 +44,87 @@
 
         <!-- Main Content -->
         <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <!-- User Greeting and Info Section -->
+            <div class="px-4 py-6 sm:px-0 mb-8">
+                <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <!-- Greeting -->
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                                Hello, {{ $adminUsername }}! 👋
+                            </h2>
+                            <div class="mb-4">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                                    {{ ucfirst($adminRole) }}
+                                </span>
+                            </div>
+                            
+                            <!-- Role-specific Information -->
+                            @if($adminRole === 'siswa' && $userInfo)
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <p class="text-sm font-medium text-gray-600">Full Name</p>
+                                        <p class="text-lg font-semibold text-gray-900">{{ $userInfo->nama }}</p>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <p class="text-sm font-medium text-gray-600">Height</p>
+                                        <p class="text-lg font-semibold text-gray-900">{{ $userInfo->tb }} cm</p>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <p class="text-sm font-medium text-gray-600">Weight</p>
+                                        <p class="text-lg font-semibold text-gray-900">{{ $userInfo->bb }} kg</p>
+                                    </div>
+                                </div>
+                            @elseif($adminRole === 'guru' && $userInfo)
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <p class="text-sm font-medium text-gray-600">Teacher Name</p>
+                                        <p class="text-lg font-semibold text-gray-900">{{ $userInfo->nama }}</p>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <p class="text-sm font-medium text-gray-600">Subject</p>
+                                        <p class="text-lg font-semibold text-gray-900">{{ $userInfo->mapel }}</p>
+                                    </div>
+                                </div>
+                            @elseif($adminRole === 'admin')
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <p class="text-sm font-medium text-gray-600">Access Level</p>
+                                    <p class="text-lg font-semibold text-gray-900">Full System Administrator</p>
+                                    <p class="text-sm text-gray-600 mt-1">You have complete access to manage all students and system features.</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Header -->
             <div class="px-4 py-6 sm:px-0">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">Student Management</h1>
-                        <p class="mt-1 text-sm text-gray-600">
-                            Manage and view student information
-                        </p>
+                        @if($adminRole === 'admin')
+                            <h1 class="text-2xl font-bold text-gray-900">Student Management</h1>
+                            <p class="mt-1 text-sm text-gray-600">
+                                Manage and view student information
+                            </p>
+                        @elseif($adminRole === 'guru')
+                            <h1 class="text-2xl font-bold text-gray-900">Student Overview</h1>
+                            <p class="mt-1 text-sm text-gray-600">
+                                View student information and data
+                            </p>
+                        @elseif($adminRole === 'siswa')
+                            <h1 class="text-2xl font-bold text-gray-900">Student Information</h1>
+                            <p class="mt-1 text-sm text-gray-600">
+                                View your personal information and class data
+                            </p>
+                        @endif
                     </div>
                     @if (session('admin_role') === 'admin')
                     <div class="mt-4 sm:mt-0">

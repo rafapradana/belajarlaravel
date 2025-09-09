@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\admin;
 use App\Models\siswa;
+use App\Models\guru;
 
 class adminController extends Controller
 {
@@ -62,13 +63,44 @@ public function prosesRegister(Request $request)
             'role' => 'required|string|in:admin,guru,siswa',
         ]);
 
-        admin::create([
+        // Additional validation based on role
+        if ($request->role == 'siswa') {
+            $request->validate([
+                'nama' => 'required|string|max:255',
+                'tb' => 'required|integer|min:50|max:250',
+                'bb' => 'required|numeric|min:10|max:200',
+            ]);
+        } elseif ($request->role == 'guru') {
+            $request->validate([
+                'nama_guru' => 'required|string|max:255',
+                'mapel' => 'required|string|max:255',
+            ]);
+        }
+
+        // Create admin record
+        $admin = admin::create([
             'username' => $request->username,
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
 
-        return redirect()->back()->with('success', 'Registrasi berhasil!');
+        // Create related records based on role
+        if ($request->role == 'siswa') {
+            siswa::create([
+                'id' => $admin->id,
+                'nama' => $request->nama,
+                'tb' => $request->tb,
+                'bb' => $request->bb,
+            ]);
+        } elseif ($request->role == 'guru') {
+            guru::create([
+                'id' => $admin->id,
+                'nama' => $request->nama_guru,
+                'mapel' => $request->mapel,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Registrasi berhasil! Akun dan data detail telah dibuat.');
     } catch (\Exception $e) {
         return redirect()->back()->with('error', 'Registrasi gagal: '. $e->getMessage());
     }

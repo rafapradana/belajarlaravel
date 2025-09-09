@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\siswa;
+use App\Models\admin;
+use App\Models\guru;
 
 
 class siswaController extends Controller
@@ -14,8 +16,22 @@ class siswaController extends Controller
         return redirect()->route('login');
     }
 
+    $adminId = session('admin_id');
+    $adminRole = session('admin_role');
+    $adminUsername = session('admin_username');
+    
+    // Get user-specific data based on role
+    $userInfo = null;
+    if ($adminRole === 'siswa') {
+        $userInfo = siswa::where('id', $adminId)->first();
+    } elseif ($adminRole === 'guru') {
+        $userInfo = guru::where('id', $adminId)->first();
+    }
+    
+    // Get all students data (for admin and guru to view)
     $siswa = siswa::all();
-    return view('home', compact('siswa'));
+    
+    return view('home', compact('siswa', 'userInfo', 'adminRole', 'adminUsername'));
 }
 
 public function create()

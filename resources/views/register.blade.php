@@ -41,6 +41,26 @@
                 @endif
 
                 <!-- Error Messages -->
+                @if($errors->any())
+                    <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Please fix the following errors:</h3>
+                                <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+                
                 @if(session('error'))
                     <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
                         <div class="flex">
@@ -103,6 +123,7 @@
                                     value="admin"
                                     required
                                     class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                                    onchange="showRoleFields(this.value)"
                                     {{ old('role') == 'admin' ? 'checked' : '' }}
                                 >
                                 <label for="role-admin" class="ml-3 block text-sm">
@@ -118,6 +139,7 @@
                                     type="radio"
                                     value="guru"
                                     class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                                    onchange="showRoleFields(this.value)"
                                     {{ old('role') == 'guru' ? 'checked' : '' }}
                                 >
                                 <label for="role-guru" class="ml-3 block text-sm">
@@ -133,6 +155,7 @@
                                     type="radio"
                                     value="siswa"
                                     class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                                    onchange="showRoleFields(this.value)"
                                     {{ old('role') == 'siswa' ? 'checked' : '' }}
                                 >
                                 <label for="role-siswa" class="ml-3 block text-sm">
@@ -140,6 +163,96 @@
                                     <span class="block text-xs text-gray-500">Limited access to view information</span>
                                 </label>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Fields for Siswa -->
+                    <div id="siswa-fields" class="space-y-4" style="display: none;">
+                        <h4 class="text-sm font-medium text-gray-700">Student Information</h4>
+                        
+                        <div>
+                            <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">
+                                Full Name
+                            </label>
+                            <input
+                                id="nama"
+                                name="nama"
+                                type="text"
+                                class="input-field"
+                                placeholder="Enter your full name"
+                                value="{{ old('nama') }}"
+                            >
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="tb" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Height (cm)
+                                </label>
+                                <input
+                                    id="tb"
+                                    name="tb"
+                                    type="number"
+                                    min="50"
+                                    max="250"
+                                    class="input-field"
+                                    placeholder="Height"
+                                    value="{{ old('tb') }}"
+                                >
+                            </div>
+
+                            <div>
+                                <label for="bb" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Weight (kg)
+                                </label>
+                                <input
+                                    id="bb"
+                                    name="bb"
+                                    type="number"
+                                    step="0.1"
+                                    min="10"
+                                    max="200"
+                                    class="input-field"
+                                    placeholder="Weight"
+                                    value="{{ old('bb') }}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Fields for Guru -->
+                    <div id="guru-fields" class="space-y-4" style="display: none;">
+                        <h4 class="text-sm font-medium text-gray-700">Teacher Information</h4>
+                        
+                        <div>
+                            <label for="nama-guru" class="block text-sm font-medium text-gray-700 mb-2">
+                                Full Name
+                            </label>
+                            <input
+                                id="nama-guru"
+                                name="nama_guru"
+                                type="text"
+                                class="input-field"
+                                placeholder="Enter your full name"
+                                value="{{ old('nama_guru') }}"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="mapel" class="block text-sm font-medium text-gray-700 mb-2">
+                                Subject
+                            </label>
+                            <select
+                                id="mapel"
+                                name="mapel"
+                                class="input-field"
+                            >
+                                <option value="">Select your subject</option>
+                                <option value="Matematika" {{ old('mapel') == 'Matematika' ? 'selected' : '' }}>Matematika</option>
+                                <option value="IPAS" {{ old('mapel') == 'IPAS' ? 'selected' : '' }}>IPAS</option>
+                                <option value="Bahasa Indonesia" {{ old('mapel') == 'Bahasa Indonesia' ? 'selected' : '' }}>Bahasa Indonesia</option>
+                                <option value="Informatika" {{ old('mapel') == 'Informatika' ? 'selected' : '' }}>Informatika</option>
+                            </select>
                         </div>
                     </div>
 
@@ -193,4 +306,86 @@
         </div>
     </div>
 </body>
+<script>
+function showRoleFields(role) {
+    // Hide all additional fields first
+    document.getElementById('siswa-fields').style.display = 'none';
+    document.getElementById('guru-fields').style.display = 'none';
+    
+    // Get all fields
+    const siswaFields = document.querySelectorAll('#siswa-fields input, #siswa-fields select');
+    const guruFields = document.querySelectorAll('#guru-fields input, #guru-fields select');
+    
+    // Disable and clear all fields first
+    siswaFields.forEach(field => {
+        field.removeAttribute('required');
+        field.disabled = true;
+        field.value = '';
+    });
+    guruFields.forEach(field => {
+        field.removeAttribute('required');
+        field.disabled = true;
+        field.value = '';
+    });
+    
+    // Show and enable relevant fields
+    if (role === 'siswa') {
+        document.getElementById('siswa-fields').style.display = 'block';
+        siswaFields.forEach(field => {
+            field.disabled = false;
+            field.setAttribute('required', 'required');
+        });
+        // Restore old values for siswa
+        if ('{{ old("nama") }}') document.getElementById('nama').value = '{{ old("nama") }}';
+        if ('{{ old("tb") }}') document.getElementById('tb').value = '{{ old("tb") }}';
+        if ('{{ old("bb") }}') document.getElementById('bb').value = '{{ old("bb") }}';
+    } else if (role === 'guru') {
+        document.getElementById('guru-fields').style.display = 'block';
+        guruFields.forEach(field => {
+            field.disabled = false;
+            field.setAttribute('required', 'required');
+        });
+        // Restore old values for guru
+        if ('{{ old("nama_guru") }}') document.getElementById('nama-guru').value = '{{ old("nama_guru") }}';
+        if ('{{ old("mapel") }}') document.getElementById('mapel').value = '{{ old("mapel") }}';
+    }
+}
+
+// Show fields if there's an old role value (after validation error)
+document.addEventListener('DOMContentLoaded', function() {
+    const checkedRole = document.querySelector('input[name="role"]:checked');
+    if (checkedRole) {
+        showRoleFields(checkedRole.value);
+    }
+});
+</script>
+<style>
+.input-field {
+    appearance: none;
+    border-radius: 0.5rem;
+    border-width: 1px;
+    border-color: #d1d5db;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    width: 100%;
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+}
+
+.input-field:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input-field:hover {
+    border-color: #9ca3af;
+}
+</style>
 </html>
