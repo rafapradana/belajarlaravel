@@ -97,7 +97,7 @@
 
                     <!-- Form -->
                     <div class="px-6 py-6">
-                        <form method="POST" action="{{ route('siswa.update', $siswa->id) }}" class="space-y-6">
+                        <form method="POST" action="{{ route('siswa.update', $siswa->idsiswa) }}" class="space-y-6">
                             @csrf
 
                             <div>

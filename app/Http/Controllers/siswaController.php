@@ -67,8 +67,20 @@ public function create()
 
 public function store(Request $request)
 {
-    siswa::create($request->only('nama', 'tb', 'bb'));
-    return redirect()->route('home');
+    $request->validate([
+        'nama' => 'required|string|max:255',
+        'tb' => 'required|integer',
+        'bb' => 'required|numeric'
+    ]);
+
+    $siswa = new Siswa();
+    $siswa->nama = $request->nama;
+    $siswa->tb = $request->tb;
+    $siswa->bb = $request->bb;
+    $siswa->id = session('admin_id'); // Get the logged-in admin's ID
+    $siswa->save();
+
+    return redirect()->route('home')->with('success', 'Data siswa berhasil ditambahkan');
 }
 
 public function edit($id)
@@ -79,10 +91,21 @@ public function edit($id)
 
 public function update(Request $request, $id)
 {
-    $siswa = siswa::where('idsiswa', $id)->firstOrFail();
-    $siswa->update($request->only('nama', 'tb', 'bb'));
+    $request->validate([
+        'nama' => 'required|string|max:255',
+        'tb' => 'required|integer',
+        'bb' => 'required|numeric'
+    ]);
 
-    return redirect()->route('home');
+    // Find the student by idsiswa
+    $siswa = Siswa::where('idsiswa', $id)->firstOrFail();
+    
+    $siswa->nama = $request->nama;
+    $siswa->tb = $request->tb;
+    $siswa->bb = $request->bb;
+    $siswa->save();
+
+    return redirect()->route('home')->with('success', 'Data siswa berhasil diperbarui');
 }
 
 public function destroy($id)

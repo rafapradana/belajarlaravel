@@ -471,9 +471,13 @@
                         <button id="cancelDelete" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
                             Cancel
                         </button>
-                        <a id="confirmDelete" href="#" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-center">
-                            Delete
-                        </a>
+                        <form id="deleteForm" method="POST" class="w-full">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                Delete
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -483,7 +487,7 @@
     <script>
         function confirmDelete(id, name) {
             document.getElementById('studentName').textContent = name;
-            document.getElementById('confirmDelete').href = '{{ route("siswa.delete", ":id") }}'.replace(':id', id);
+            document.getElementById('deleteForm').action = '{{ url("/siswa") }}/' + id;
             document.getElementById('deleteModal').classList.remove('hidden');
         }
 

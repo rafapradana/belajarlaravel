@@ -11,7 +11,8 @@ class Siswa extends Model
     
     protected $primaryKey = 'idsiswa';
     protected $table = 'datasiswa';
-    protected $fillable = ['id','nama', 'bb', 'tb'];
+    protected $fillable = ['id', 'nama', 'bb', 'tb'];
+    public $timestamps = true;
 
     public function admin() {
         return $this->belongsTo(Admin::class, 'id');
