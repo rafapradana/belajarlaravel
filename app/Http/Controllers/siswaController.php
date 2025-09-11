@@ -70,14 +70,24 @@ public function store(Request $request)
     $request->validate([
         'nama' => 'required|string|max:255',
         'tb' => 'required|integer',
-        'bb' => 'required|numeric'
+        'bb' => 'required|numeric',
+        'username' => 'required|string|max:255|unique:dataadmin,username',
+        'password' => 'required|string|min:6',
     ]);
 
+    // 1. Simpan ke dataadmin
+    $admin = new \App\Models\admin();
+    $admin->username = $request->username;
+    $admin->password = bcrypt($request->password);
+    $admin->role = 'siswa';
+    $admin->save();
+
+    // 2. Simpan ke datasiswa dengan id dari dataadmin
     $siswa = new Siswa();
     $siswa->nama = $request->nama;
     $siswa->tb = $request->tb;
     $siswa->bb = $request->bb;
-    $siswa->id = session('admin_id'); // Get the logged-in admin's ID
+    $siswa->id = $admin->id; // foreign key ke dataadmin
     $siswa->save();
 
     return redirect()->route('home')->with('success', 'Data siswa berhasil ditambahkan');

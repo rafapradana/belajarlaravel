@@ -46,6 +46,7 @@
                         <form method="POST" action="{{ route('siswa.store') }}" class="space-y-6">
                             @csrf
 
+
                             <div>
                                 <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">
                                     Full Name
@@ -60,6 +61,37 @@
                                     value="{{ old('nama') }}"
                                 >
                                 <p class="mt-1 text-xs text-gray-500">Enter the complete name of the student</p>
+                            </div>
+
+                            <div>
+                                <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Username
+                                </label>
+                                <input
+                                    id="username"
+                                    name="username"
+                                    type="text"
+                                    required
+                                    class="input-field"
+                                    placeholder="Enter student's username"
+                                    value="{{ old('username') }}"
+                                >
+                                <p class="mt-1 text-xs text-gray-500">Username for student login</p>
+                            </div>
+
+                            <div>
+                                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Password
+                                </label>
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    required
+                                    class="input-field"
+                                    placeholder="Enter student's password"
+                                >
+                                <p class="mt-1 text-xs text-gray-500">Password for student login</p>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
