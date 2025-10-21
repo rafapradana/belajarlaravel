@@ -53,10 +53,24 @@ class siswaController extends Controller
         }
     }
 
-    // Get all students data (for admin to view)
-    $siswa = siswa::all();
+    // Get all students data (for admin to view) - removed for Ajax implementation
+    // $siswa = siswa::all();
 
-    return view('home', compact('siswa', 'userInfo', 'adminRole', 'adminUsername', 'kelasInfo', 'walasInfo', 'siswaWalas'));
+    return view('home', compact('userInfo', 'adminRole', 'adminUsername', 'kelasInfo', 'walasInfo', 'siswaWalas'));
+}
+
+public function getData() 
+{ 
+    $siswa = Siswa::all(); 
+    return response()->json($siswa); 
+}
+
+public function search(Request $request)
+{ 
+    $keyword = strtolower($request->input('q')); 
+    $siswa = Siswa::whereRaw('LOWER(nama) LIKE ?', ["%{$keyword}%"])
+                ->get(); 
+    return response()->json($siswa); 
 }
 
 public function create()

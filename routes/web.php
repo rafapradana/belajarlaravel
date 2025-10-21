@@ -18,6 +18,10 @@ Route::middleware(['ceklogin'])->group(function () {
 
     Route::get('/home', [siswaController::class, 'home'])->name('home');
     
+    // Ajax routes untuk data siswa
+    Route::get('/siswa/data', [siswaController::class, 'getData'])->name('siswa.data');
+    Route::get('/siswa/search', [siswaController::class, 'search'])->name('siswa.search');
+    
     // Routes khusus admin - membutuhkan role admin
     Route::middleware(['cekadmin'])->group(function () {
         Route::get('/siswa/create', [siswaController::class, 'create'])->name('siswa.create');
