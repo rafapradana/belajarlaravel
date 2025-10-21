@@ -27,24 +27,13 @@ class kbmController extends Controller
             return view('kbm.admin', compact('jadwal'));
         } 
         elseif ($role == 'guru') {
+            // Guru (termasuk walas) hanya bisa melihat jadwal KBM yang dia ajar
             $guru = guru::where('id', $adminId)->first();
             if ($guru) {
-                // Cek apakah guru ini adalah walas
-                $walas = walas::where('idguru', $guru->idguru)->first();
-                
-                if ($walas) {
-                    // Jika guru adalah walas, tampilkan semua jadwal guru yang mengajar di kelasnya
-                    $jadwal = kbm::with(['guru', 'walas'])
-                        ->where('idwalas', $walas->idwalas)
-                        ->get();
-                    return view('kbm.walas', compact('jadwal', 'guru', 'walas'));
-                } else {
-                    // Jika guru biasa, hanya tampilkan jadwal yang dia ajar
-                    $jadwal = kbm::with(['guru', 'walas'])
-                        ->where('idguru', $guru->idguru)
-                        ->get();
-                    return view('kbm.guru', compact('jadwal', 'guru'));
-                }
+                $jadwal = kbm::with(['guru', 'walas'])
+                    ->where('idguru', $guru->idguru)
+                    ->get();
+                return view('kbm.guru', compact('jadwal', 'guru'));
             }
         } 
         elseif ($role == 'siswa') {
