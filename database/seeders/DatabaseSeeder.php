@@ -9,6 +9,7 @@ use App\Models\guru;
 use App\Models\konten;
 use App\Models\walas;
 use App\Models\kelas;
+use App\Models\kbm;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -70,5 +71,8 @@ class DatabaseSeeder extends Seeder
                 }
             }
         }
+
+        //membuat 15 data untuk tabel kbm (jadwal KBM)
+        kbm::factory(15)->create();
     }
 }

@@ -171,12 +171,36 @@
                         @endif
                     </div>
                     @if (session('admin_role') === 'admin')
-                    <div class="mt-4 sm:mt-0">
+                    <div class="mt-4 sm:mt-0 flex space-x-3">
+                        <a href="{{ route('kbm.index') }}" class="btn-secondary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Jadwal KBM
+                        </a>
                         <a href="{{ route('siswa.create') }}" class="btn-primary">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
                             Add Student
+                        </a>
+                    </div>
+                    @elseif (session('admin_role') === 'guru')
+                    <div class="mt-4 sm:mt-0">
+                        <a href="{{ route('kbm.index') }}" class="btn-primary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Lihat Jadwal KBM
+                        </a>
+                    </div>
+                    @elseif (session('admin_role') === 'siswa')
+                    <div class="mt-4 sm:mt-0">
+                        <a href="{{ route('kbm.index') }}" class="btn-primary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Jadwal Kelas Saya
                         </a>
                     </div>
                     @endif
@@ -400,7 +424,13 @@
                         <h3 class="mt-2 text-sm font-medium text-gray-900">No students</h3>
                         <p class="mt-1 text-sm text-gray-500">Get started by adding a new student.</p>
                         @if (session('admin_role') === 'admin')
-                        <div class="mt-6">
+                        <div class="mt-6 flex space-x-3">
+                            <a href="{{ route('kbm.index') }}" class="btn-secondary">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Jadwal KBM
+                            </a>
                             <a href="{{ route('siswa.create') }}" class="btn-primary">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -428,6 +458,14 @@
                             @endif
                             Anda tidak memiliki akses untuk melihat data siswa karena tidak ditugaskan sebagai wali kelas.
                         </p>
+                        <div class="mt-6">
+                            <a href="{{ route('kbm.index') }}" class="btn-primary">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Lihat Jadwal KBM Saya
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -444,6 +482,14 @@
                             Informasi lengkap Anda telah ditampilkan di atas.<br>
                             Untuk informasi lebih lanjut, silakan hubungi wali kelas atau administrator.
                         </p>
+                        <div class="mt-6">
+                            <a href="{{ route('kbm.index') }}" class="btn-primary">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Lihat Jadwal Kelas Saya
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

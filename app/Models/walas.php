@@ -22,4 +22,10 @@ class walas extends Model
     {
         return $this->hasMany(kelas::class, 'idwalas');
     }
+
+    // Relasi hasMany ke kbm
+    public function kbm()
+    {
+        return $this->hasMany(kbm::class, 'idwalas', 'idwalas');
+    }
 }

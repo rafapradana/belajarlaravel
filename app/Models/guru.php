@@ -16,4 +16,9 @@ class guru extends Model
     public function admin() {
         return $this->belongsTo(admin::class, 'id');
     }
+
+    // Relasi hasMany ke kbm
+    public function kbm() {
+        return $this->hasMany(kbm::class, 'idguru', 'idguru');
+    }
 }
