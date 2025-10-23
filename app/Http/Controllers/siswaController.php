@@ -22,6 +22,9 @@ class siswaController extends Controller
     $adminRole = session('admin_role');
     $adminUsername = session('admin_username');
 
+    // Tambahkan koleksi siswa untuk kebutuhan statistik admin
+    $siswa = collect();
+
     // Get user-specific data based on role
     $userInfo = null;
     $kelasInfo = null;
@@ -51,26 +54,69 @@ class siswaController extends Controller
                                   ->pluck('siswa');
             }
         }
+    } elseif ($adminRole === 'admin') {
+        // Ambil semua data siswa untuk statistik di dashboard admin
+        $siswa = \App\Models\siswa::all();
     }
 
-    // Get all students data (for admin to view) - removed for Ajax implementation
-    // $siswa = siswa::all();
-
-    return view('home', compact('userInfo', 'adminRole', 'adminUsername', 'kelasInfo', 'walasInfo', 'siswaWalas'));
+    return view('home', compact('userInfo', 'adminRole', 'adminUsername', 'kelasInfo', 'walasInfo', 'siswaWalas', 'siswa'));
 }
 
-public function getData() 
-{ 
-    $siswa = Siswa::all(); 
-    return response()->json($siswa); 
+public function getData()
+{
+    $adminRole = session('admin_role');
+    $adminId = session('admin_id');
+
+    $siswa = collect();
+
+    if ($adminRole === 'admin') {
+        $siswa = siswa::orderBy('nama')->get();
+    } elseif ($adminRole === 'guru') {
+        $guru = guru::where('id', $adminId)->first();
+        if ($guru) {
+            $walasInfo = walas::where('idguru', $guru->idguru)->first();
+            if ($walasInfo) {
+                $siswa = kelas::where('idwalas', $walasInfo->idwalas)
+                              ->with('siswa')
+                              ->get()
+                              ->pluck('siswa');
+            }
+        }
+    }
+
+    return view('siswa.table', compact('siswa'));
 }
 
 public function search(Request $request)
-{ 
-    $keyword = strtolower($request->input('q')); 
-    $siswa = Siswa::whereRaw('LOWER(nama) LIKE ?', ["%{$keyword}%"])
-                ->get(); 
-    return response()->json($siswa); 
+{
+    $keyword = strtolower($request->input('query', $request->input('q', '')));
+    $adminRole = session('admin_role');
+    $adminId = session('admin_id');
+
+    $siswa = collect();
+
+    if ($adminRole === 'admin') {
+        $siswa = siswa::whereRaw('LOWER(nama) LIKE ?', ["%{$keyword}%"]) 
+                      ->orderBy('nama')
+                      ->get();
+    } elseif ($adminRole === 'guru') {
+        $guru = guru::where('id', $adminId)->first();
+        if ($guru) {
+            $walasInfo = walas::where('idguru', $guru->idguru)->first();
+            if ($walasInfo) {
+                $siswa = kelas::where('idwalas', $walasInfo->idwalas)
+                              ->with('siswa')
+                              ->get()
+                              ->pluck('siswa')
+                              ->filter(function ($s) use ($keyword) {
+                                  return $keyword === '' || stripos($s->nama, $keyword) !== false;
+                              })
+                              ->values();
+            }
+        }
+    }
+
+    return view('siswa.table', compact('siswa'));
 }
 
 public function create()
@@ -97,7 +143,7 @@ public function store(Request $request)
     $admin->save();
 
     // 2. Simpan ke datasiswa dengan id dari dataadmin
-    $siswa = new Siswa();
+    $siswa = new siswa();
     $siswa->nama = $request->nama;
     $siswa->tb = $request->tb;
     $siswa->bb = $request->bb;
@@ -122,7 +168,7 @@ public function update(Request $request, $id)
     ]);
 
     // Find the student by idsiswa
-    $siswa = Siswa::where('idsiswa', $id)->firstOrFail();
+    $siswa = siswa::where('idsiswa', $id)->firstOrFail();
     
     $siswa->nama = $request->nama;
     $siswa->tb = $request->tb;
