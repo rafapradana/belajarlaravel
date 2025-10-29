@@ -22,6 +22,10 @@ Route::middleware(['ceklogin'])->group(function () {
     Route::get('/siswa/data', [siswaController::class, 'getData'])->name('siswa.data');
     Route::get('/siswa/search', [siswaController::class, 'search'])->name('siswa.search');
     
+    // Ajax routes untuk data KBM
+    Route::get('/kbm/data', [kbmController::class, 'getData'])->name('kbm.data');
+    Route::get('/kbm/search', [kbmController::class, 'search'])->name('kbm.search');
+    
     // Routes khusus admin - membutuhkan role admin
     Route::middleware(['cekadmin'])->group(function () {
         Route::get('/siswa/create', [siswaController::class, 'create'])->name('siswa.create');

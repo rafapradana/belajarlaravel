@@ -53,6 +53,142 @@ class kbmController extends Controller
         return redirect()->back()->with('error', 'Tidak dapat mengakses jadwal KBM');
     }
 
+    // Method untuk AJAX - mengambil data KBM
+    public function getData()
+    {
+        // Cek apakah user sudah login
+        if (!session()->has('admin_id')) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        
+        $adminId = session('admin_id');
+        $role = session('admin_role');
+        
+        if ($role == 'admin') {
+            // Admin bisa melihat semua jadwal KBM
+            $jadwal = kbm::with(['guru', 'walas'])->orderBy('hari')->orderBy('mulai')->get();
+        } 
+        elseif ($role == 'guru') {
+            // Guru (termasuk walas) hanya bisa melihat jadwal KBM yang dia ajar
+            $guru = guru::where('id', $adminId)->first();
+            if ($guru) {
+                $jadwal = kbm::with(['guru', 'walas'])
+                    ->where('idguru', $guru->idguru)
+                    ->orderBy('hari')->orderBy('mulai')
+                    ->get();
+            } else {
+                $jadwal = collect();
+            }
+        } 
+        elseif ($role == 'siswa') {
+            // Siswa hanya bisa melihat jadwal KBM dari kelas mereka
+            $siswa = \App\Models\siswa::where('id', $adminId)->first();
+            if ($siswa) {
+                $kelas = \App\Models\kelas::where('idsiswa', $siswa->idsiswa)->first();
+                if ($kelas) {
+                    $jadwal = kbm::with(['guru', 'walas'])
+                        ->where('idwalas', $kelas->idwalas)
+                        ->orderBy('hari')->orderBy('mulai')
+                        ->get();
+                } else {
+                    $jadwal = collect();
+                }
+            } else {
+                $jadwal = collect();
+            }
+        } else {
+            $jadwal = collect();
+        }
+
+        return view('kbm.table', compact('jadwal'));
+    }
+
+    // Method untuk AJAX - search KBM
+    public function search(Request $request)
+    {
+        $keyword = strtolower($request->input('search', ''));
+        
+        // Cek apakah user sudah login
+        if (!session()->has('admin_id')) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        
+        $adminId = session('admin_id');
+        $role = session('admin_role');
+        
+        if ($role == 'admin') {
+            // Admin bisa search semua jadwal KBM
+            $jadwal = kbm::with(['guru', 'walas'])
+                ->whereHas('guru', function($query) use ($keyword) {
+                    $query->whereRaw('LOWER(nama) LIKE ?', ["%{$keyword}%"])
+                          ->orWhereRaw('LOWER(mapel) LIKE ?', ["%{$keyword}%"]);
+                })
+                ->orWhereHas('walas', function($query) use ($keyword) {
+                    $query->whereRaw('LOWER(jenjang) LIKE ?', ["%{$keyword}%"])
+                          ->orWhereRaw('LOWER(concat(jenjang,namakelas)) LIKE ?', ["%{$keyword}%"])
+                          ->orWhereRaw('LOWER(concat(jenjang, " ", namakelas)) LIKE ?', ["%{$keyword}%"]);
+                })
+                ->orWhereRaw('LOWER(hari) LIKE ?', ["%{$keyword}%"])
+                ->orderBy('hari')->orderBy('mulai')
+                ->get();
+        } 
+        elseif ($role == 'guru') {
+            // Guru search dalam jadwal KBM yang dia ajar
+            $guru = guru::where('id', $adminId)->first();
+            if ($guru) {
+                $jadwal = kbm::with(['guru', 'walas'])
+                    ->where('idguru', $guru->idguru)
+                    ->where(function($query) use ($keyword) {
+                        $query->whereHas('guru', function($q) use ($keyword) {
+                            $q->whereRaw('LOWER(nama) LIKE ?', ["%{$keyword}%"])
+                              ->orWhereRaw('LOWER(mapel) LIKE ?', ["%{$keyword}%"]);
+                        })
+                        ->orWhereHas('walas', function($q) use ($keyword) {
+                            $q->whereRaw('LOWER(jenjang) LIKE ?', ["%{$keyword}%"])
+                              ->orWhereRaw('LOWER(namakelas) LIKE ?', ["%{$keyword}%"]);
+                        })
+                        ->orWhereRaw('LOWER(hari) LIKE ?', ["%{$keyword}%"]);
+                    })
+                    ->orderBy('hari')->orderBy('mulai')
+                    ->get();
+            } else {
+                $jadwal = collect();
+            }
+        } 
+        elseif ($role == 'siswa') {
+            // Siswa search dalam jadwal KBM dari kelas mereka
+            $siswa = \App\Models\siswa::where('id', $adminId)->first();
+            if ($siswa) {
+                $kelas = \App\Models\kelas::where('idsiswa', $siswa->idsiswa)->first();
+                if ($kelas) {
+                    $jadwal = kbm::with(['guru', 'walas'])
+                        ->where('idwalas', $kelas->idwalas)
+                        ->where(function($query) use ($keyword) {
+                            $query->whereHas('guru', function($q) use ($keyword) {
+                                $q->whereRaw('LOWER(nama) LIKE ?', ["%{$keyword}%"])
+                                  ->orWhereRaw('LOWER(mapel) LIKE ?', ["%{$keyword}%"]);
+                            })
+                            ->orWhereHas('walas', function($q) use ($keyword) {
+                                $q->whereRaw('LOWER(jenjang) LIKE ?', ["%{$keyword}%"])
+                                  ->orWhereRaw('LOWER(namakelas) LIKE ?', ["%{$keyword}%"]);
+                            })
+                            ->orWhereRaw('LOWER(hari) LIKE ?', ["%{$keyword}%"]);
+                        })
+                        ->orderBy('hari')->orderBy('mulai')
+                        ->get();
+                } else {
+                    $jadwal = collect();
+                }
+            } else {
+                $jadwal = collect();
+            }
+        } else {
+            $jadwal = collect();
+        }
+
+        return view('kbm.table', compact('jadwal'));
+    }
+
     // Method untuk admin mengelola jadwal KBM
     public function create()
     {
