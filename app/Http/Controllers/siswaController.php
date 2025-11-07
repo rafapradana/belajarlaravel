@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreSiswaRequest;
+use App\Services\SiswaService;
 use App\Models\siswa;
 use App\Models\admin;
 use App\Models\guru;
@@ -12,6 +14,12 @@ use App\Models\kelas;
 
 class siswaController extends Controller
 {
+    protected $service;
+
+    public function __construct(SiswaService $service)
+    {
+        $this->service = $service;
+    }
     public function home()
 {
     if (!session()->has('admin_id')) {
@@ -125,32 +133,11 @@ public function create()
 
 }
 
-public function store(Request $request)
+public function store(StoreSiswaRequest $request)
 {
-    $request->validate([
-        'nama' => 'required|string|max:255',
-        'tb' => 'required|integer',
-        'bb' => 'required|numeric',
-        'username' => 'required|string|max:255|unique:dataadmin,username',
-        'password' => 'required|string|min:6',
-    ]);
+    $this->service->createSiswa($request->validated());
 
-    // 1. Simpan ke dataadmin
-    $admin = new \App\Models\admin();
-    $admin->username = $request->username;
-    $admin->password = bcrypt($request->password);
-    $admin->role = 'siswa';
-    $admin->save();
-
-    // 2. Simpan ke datasiswa dengan id dari dataadmin
-    $siswa = new siswa();
-    $siswa->nama = $request->nama;
-    $siswa->tb = $request->tb;
-    $siswa->bb = $request->bb;
-    $siswa->id = $admin->id; // foreign key ke dataadmin
-    $siswa->save();
-
-    return redirect()->route('home')->with('success', 'Data siswa berhasil ditambahkan');
+    return redirect()->route('home')->with('success', 'Data siswa berhasil ditambahkan!');
 }
 
 public function edit($id)
