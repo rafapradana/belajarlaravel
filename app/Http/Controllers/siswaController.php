@@ -18,6 +18,9 @@ class siswaController extends Controller
 
     public function __construct(SiswaService $service)
     {
+        // Dependency Injection (DI):
+        // Laravel otomatis memasukkan (inject) object SiswaService ke controller.
+        // Tujuan: memisahkan logika bisnis dari controller agar kode lebih rapi.
         $this->service = $service;
     }
     public function home()
@@ -135,8 +138,16 @@ public function create()
 
 public function store(StoreSiswaRequest $request)
 {
+    // 1) Validasi input:
+    //    StoreSiswaRequest akan otomatis memvalidasi field dari form.
+    //    Jika ada yang salah, Laravel akan kembali ke form dengan pesan error.
+
+    // 2) Simpan data:
+    //    Data yang sudah "bersih" (validated) diteruskan ke Service.
+    //    Service akan mengatur proses penyimpanan (melalui Repository).
     $this->service->createSiswa($request->validated());
 
+    // 3) Kembali ke halaman utama dengan pesan sukses.
     return redirect()->route('home')->with('success', 'Data siswa berhasil ditambahkan!');
 }
 
